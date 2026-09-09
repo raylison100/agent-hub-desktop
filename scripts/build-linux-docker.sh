@@ -23,6 +23,7 @@ docker run --rm \
     tauri icon ../web/public/icon.svg
     tauri build --config "{\"build\":{\"beforeBuildCommand\":\"\"}}"
     rm -rf dist-bundle && mkdir -p dist-bundle
-    cp -r src-tauri/target/release/bundle/* dist-bundle/
-    ls -R dist-bundle | head -40
+    find src-tauri/target/release/bundle -maxdepth 2 -type f \( -name "*.deb" -o -name "*.rpm" -o -name "*.AppImage" \) -exec cp {} dist-bundle/ \;
+    ls -la dist-bundle
   '
+echo "AppImage exige FUSE no host do build; sem ele ficam apenas deb e rpm."
