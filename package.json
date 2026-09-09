@@ -1,0 +1,16 @@
+{
+  "name": "agent-hub-desktop",
+  "version": "0.1.0",
+  "description": "Casca Tauri do Agent Hub: janela, bandeja e daemon como sidecar",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "web:build": "pnpm --dir ../web build",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "tauri": "tauri"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

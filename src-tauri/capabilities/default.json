@@ -1,0 +1,21 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Permissoes da janela principal: abrir links e controlar o sidecar do daemon",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "shell:allow-open",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "binaries/agent-hub-daemon",
+          "sidecar": true,
+          "args": ["start"]
+        }
+      ]
+    }
+  ]
+}
