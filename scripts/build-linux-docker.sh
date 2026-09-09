@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Compila o desktop para Linux dentro de um container com Rust e as
+# dependencias do Tauri. Saida em desktop/dist-bundle.
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+IMAGE="agent-hub-tauri"
+
+if [ ! -d "$ROOT/web/dist" ]; then
+  echo "web/dist ausente; rode pnpm build em web/ antes" >&2
+  exit 1
+fi
+
+docker build -t "$IMAGE" "$ROOT/desktop/docker"
+"$ROOT/desktop/scripts/make-sidecar.sh" x86_64-unknown-linux-gnu
+
+docker run --rm \
+  -v "$ROOT":/work \
+  -v agent-hub-cargo-registry:/usr/local/cargo/registry \
+  -v agent-hub-cargo-target:/work/desktop/src-tauri/target \
+  -w /work/desktop \
+  "$IMAGE" bash -c '
+    set -e
+    tauri icon ../web/public/icon.svg
+    tauri build --config "{\"build\":{\"beforeBuildCommand\":\"\"}}"
+    rm -rf dist-bundle && mkdir -p dist-bundle
+    cp -r src-tauri/target/release/bundle/* dist-bundle/
+    ls -R dist-bundle | head -40
+  '
