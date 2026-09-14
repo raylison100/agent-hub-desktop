@@ -32,5 +32,16 @@
     "externalBin": [
       "binaries/agent-hub-daemon"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVGNUZBNTUwOTA5RUE2RUIKUldUcnBwNlFVS1ZmWDhEdGdUWGdHaEh5Z3RWWmVvdE1DdUp1b3Z0cnlIQ25Gd1E2c2ZuTEpJY1kK",
+      "endpoints": [
+        "https://github.com/raylison100/agent-hub/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }
