@@ -1,6 +1,6 @@
 {
   "name": "agent-hub-desktop",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Casca Tauri do Agent Hub: janela, bandeja e daemon como sidecar",
   "license": "PolyForm-Noncommercial-1.0.0",
   "author": "Raylison Nunes (https://github.com/raylison100)",
