@@ -1,47 +1,69 @@
 # agent-hub-desktop
 
-Casca Tauri 2. Janela nativa, bandeja com Abrir e Sair, fechar a janela
-esconde em vez de encerrar, e o daemon sobe como sidecar quando nao ha um
-respondendo em `127.0.0.1:47311`. Embute o build de `../web`.
+App de desktop do Agent Hub em Tauri 2, para Windows e Linux. E uma janela
+nativa com bandeja em volta da mesma interface do
+[agent-hub-web](https://github.com/raylison100/agent-hub-web): fechar a janela
+esconde o app, e o menu da bandeja tem Abrir e Sair.
 
-Estado: fase 2, esqueleto escrito e nao compilado. A maquina de
-desenvolvimento nao tinha Rust no WSL. Ver
-`../docs/adr/0002-tauri-com-daemon-sidecar.md`.
+- **Linux**: quando nao ha daemon respondendo em `127.0.0.1:47311`, o app sobe
+  o daemon como sidecar.
+- **Windows**: nao ha sidecar. O app conecta no daemon que roda no WSL, que o
+  WSL2 expoe em `127.0.0.1:47311` no Windows. A conexao e automatica.
 
-## Requisitos
+## Gerar os instaladores
 
-- Rust estavel e as dependencias do Tauri 2 para o sistema
-  (`https://tauri.app/start/prerequisites/`).
-- `pnpm add -D @tauri-apps/cli` neste repositorio.
-- `../web` instalado. O `beforeBuildCommand` gera `../web/dist`.
-- O daemon empacotado como binario unico em
-  `src-tauri/binaries/agent-hub-daemon-<target-triple>` (por exemplo
-  `agent-hub-daemon-x86_64-pc-windows-msvc.exe`). Gere com
-  `node --experimental-sea-config` ou `pkg` a partir de `../daemon/dist`.
-- Icones em `src-tauri/icons/` gerados com `pnpm tauri icon ../web/public/icon.svg`.
-
-## Comandos
+Os builds rodam em Docker, sem precisar de Rust na maquina. Da raiz do
+[agent-hub](https://github.com/raylison100/agent-hub):
 
 ```bash
-pnpm install
-pnpm tauri icon ../web/public/icon.svg
-pnpm dev
-pnpm build
+make windows
+make linux
 ```
 
-`pnpm build` gera MSI e NSIS no Windows, DMG no macOS, AppImage e deb no
-Linux.
+Saem em `dist-bundle/`: instalador NSIS e executavel portatil para Windows
+(compilado com `cargo-xwin`), `.deb` e `.rpm` para Linux. Os binarios nao sao
+assinados.
+
+Para instalar no Windows, copie o instalador para uma pasta do proprio Windows
+antes de rodar: executado direto de `\\wsl.localhost\...` ele falha.
 
 ## Estrutura
 
 ```
+docker/                    imagens de build para Linux e Windows
+scripts/
+  build-windows-docker.sh  instalador NSIS
+  build-linux-docker.sh    deb e rpm
+  make-sidecar.sh          empacota o daemon como binario unico para o Linux
 src-tauri/
-  Cargo.toml
-  tauri.conf.json          janela, sidecar externo, bundle
-  capabilities/default.json permissoes: abrir links, executar o sidecar
-  src/main.rs
+  tauri.conf.json          janela, sidecar e bundle
+  tauri.windows.conf.json  tira o sidecar no Windows
+  capabilities/            permissoes: links, sidecar e dialogo de pasta
   src/lib.rs               bandeja, esconder ao fechar, subir e parar o sidecar
 ```
 
-Se o sidecar nao subir em alguma plataforma, instale o daemon como servico
-do sistema. A interface conecta em `127.0.0.1:47311` de qualquer forma.
+## Parte do Agent Hub
+
+Este repositorio e uma das partes do [Agent Hub](https://github.com/raylison100/agent-hub),
+um gerenciador de modelos de IA que roda na sua maquina. A documentacao geral
+esta na [wiki](https://github.com/raylison100/agent-hub/wiki).
+
+| Repositorio | Papel |
+|---|---|
+| [agent-hub](https://github.com/raylison100/agent-hub) | ponto de partida, Makefile, scripts e wiki |
+| [agent-hub-core](https://github.com/raylison100/agent-hub-core) | biblioteca TypeScript: adaptadores, laco do agente, custo, roteamento, ferramentas, protocolo |
+| [agent-hub-daemon](https://github.com/raylison100/agent-hub-daemon) | servico local: sessoes, runs, aprovacoes, automacao, conectores, API WebSocket |
+| [agent-hub-web](https://github.com/raylison100/agent-hub-web) | interface Vue 3 como PWA, a mesma no navegador, no celular e no desktop |
+| [agent-hub-agents](https://github.com/raylison100/agent-hub-agents) | perfis, papeis, skills, workflows, precos, roteamento e politicas, em texto |
+| [agent-hub-desktop](https://github.com/raylison100/agent-hub-desktop) | app Tauri 2 para Windows e Linux |
+| [agent-hub-relay](https://github.com/raylison100/agent-hub-relay) | retransmissor sem estado para acesso remoto |
+| [agent-hub-channels](https://github.com/raylison100/agent-hub-channels) | clientes em plataformas de mensagem, hoje Telegram |
+| [agent-hub-docs](https://github.com/raylison100/agent-hub-docs) | planejamento, arquitetura, ADRs e a fonte das paginas da wiki |
+
+## Licenca
+
+[PolyForm Noncommercial 1.0.0](LICENSE). Pode ler, estudar, modificar e usar
+para fins pessoais, de pesquisa, ensino ou em organizacao sem fins lucrativos.
+Uso comercial nao e permitido sem autorizacao do autor.
+
+Required Notice: Copyright (c) 2026 Raylison Nunes (https://github.com/raylison100)
